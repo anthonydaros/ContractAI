@@ -2,11 +2,11 @@
  * Text Sanitization Utilities
  *
  * Provides XSS protection for user-generated and API-sourced content.
- * Uses DOMPurify for HTML sanitization with isomorphic support for SSR.
+ * Uses DOMPurify for HTML sanitization (client-side only).
  *
  * @module lib/sanitize
  */
-import DOMPurify from "isomorphic-dompurify";
+import DOMPurify from "dompurify";
 
 /**
  * Sanitize configuration for plain text content.
