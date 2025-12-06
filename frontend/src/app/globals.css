@@ -1,0 +1,225 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Corporate Blue Theme */
+    --background: 222 47% 7%;
+    --foreground: 210 40% 98%;
+
+    /* Cards & Surfaces */
+    --card: 217 33% 12%;
+    --card-foreground: 210 40% 98%;
+    --popover: 217 33% 12%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Primary - Corporate Blue */
+    --primary: 217 91% 60%;
+    --primary-foreground: 210 40% 98%;
+
+    /* Secondary */
+    --secondary: 217 33% 17%;
+    --secondary-foreground: 210 40% 98%;
+
+    /* Accent */
+    --accent: 217 91% 60%;
+    --accent-foreground: 210 40% 98%;
+
+    /* Muted - WCAG AAA compliant */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
+
+    /* Destructive */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    /* Borders & Inputs */
+    --border: 217 33% 20%;
+    --input: 217 33% 17%;
+    --ring: 217 91% 60%;
+
+    /* Radius */
+    --radius: 0.75rem;
+
+    /* Semantic Colors */
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+
+    /* Risk Colors - Corporate */
+    --risk-low: #10b981;
+    --risk-medium: #f59e0b;
+    --risk-high: #f97316;
+    --risk-critical: #ef4444;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    background: #0f172a;
+    overflow-x: hidden;
+  }
+}
+
+/* Reduced Motion Support - WCAG 2.2 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@layer components {
+  /* Main Background with subtle gradient */
+  .dark-gradient-bg {
+    background: #0f172a;
+    background-image:
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent),
+      radial-gradient(ellipse 60% 40% at 100% 100%, rgba(99, 102, 241, 0.08), transparent);
+  }
+
+  /* Card Styles - Clean, No Glow */
+  .glass-card {
+    @apply relative overflow-hidden rounded-2xl;
+    background: #1e293b;
+    border: 1px solid #334155;
+    transition: border-color 0.2s ease;
+  }
+
+  .glass-card:hover {
+    border-color: #475569;
+  }
+
+  /* Primary Button - Corporate */
+  .glow-button {
+    @apply relative overflow-hidden font-semibold;
+    background: #2563eb;
+    border: none;
+    border-radius: 0.75rem;
+    color: white;
+    transition: background-color 0.2s ease;
+  }
+
+  .glow-button:hover {
+    background: #1d4ed8;
+  }
+
+  .glow-button:focus-visible {
+    @apply outline-none ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-900;
+  }
+
+  /* Risk Level Badges - Corporate Colors */
+  .risk-badge {
+    @apply px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider;
+  }
+
+  .risk-badge-low {
+    background: rgba(16, 185, 129, 0.15);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #34d399;
+  }
+
+  .risk-badge-medium {
+    background: rgba(245, 158, 11, 0.15);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #fbbf24;
+  }
+
+  .risk-badge-high {
+    background: rgba(249, 115, 22, 0.15);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    color: #fb923c;
+  }
+
+  .risk-badge-critical {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+  }
+
+  /* Risk Text Colors */
+  .risk-low { color: #34d399; }
+  .risk-medium { color: #fbbf24; }
+  .risk-high { color: #fb923c; }
+  .risk-critical { color: #f87171; }
+
+  /* Feature Card - Simple */
+  .feature-card {
+    @apply relative overflow-hidden rounded-2xl p-8;
+    background: #1e293b;
+    border: 1px solid #334155;
+    transition: border-color 0.2s ease;
+  }
+
+  .feature-card:hover {
+    border-color: #475569;
+  }
+
+  /* Stat Card */
+  .stat-card {
+    @apply relative overflow-hidden rounded-xl p-6;
+    background: #1e293b;
+    border: 1px solid #334155;
+  }
+
+  /* Focus Ring Utility */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+
+  /* Interactive Element Base */
+  .interactive {
+    @apply transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900;
+  }
+
+  /* Simple Divider */
+  .divider {
+    height: 1px;
+    background: #334155;
+    margin: 2rem 0;
+  }
+}
+
+/* Hero Title */
+.hero-title {
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #f8fafc;
+}
+
+/* Scrollbar - Simplified */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Selection */
+::selection {
+  background: rgba(37, 99, 235, 0.3);
+  color: white;
+}

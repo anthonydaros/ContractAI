@@ -1,0 +1,106 @@
+# ContractAI - Intelligent Contract Negotiator
+
+![Project Status](https://img.shields.io/badge/status-MVP-blue)
+![License](https://img.shields.io/badge/license-Portfolio-green)
+
+**ContractAI** is a specialized tool for automated legal contract analysis. It ingests PDF/DOCX documents, extracts clause-level data, and uses local LLMs (Llama 3 via Ollama) to assess risks, check for compliance, and suggest protective rewrites.
+
+> **Disclaimer**: This is a technical portfolio project by **[Anthony Max](http://anthonymax.com/)**. It demonstrates architecture and AI integration skills. **It offers no legal guarantees.**
+
+## 🏗 System Architecture
+
+The project is built as a distributed system with a strict separation of concerns (Clean Architecture).
+
+### Backend (`/backend`)
+A high-performance **FastAPI** service responsible for document processing and LLM orchestration.
+- **Runtime**: Python 3.10+
+- **API**: FastAPI (Async/Await)
+- **AI Integration**: Custom Gateway using `OpenAI` SDK to communicate with **Ollama** (Llama 3).
+- **Document Parsing**:
+  - `PyMuPDF` (Fitz) for PDF extraction.
+  - `python-docx` for Word documents.
+  - *Note: `faiss-cpu` & `LangChain` are installed for future RAG capabilities.*
+- **Architecture**: Domain-Driven Design (DDD) layers (`domain`, `application`, `infrastructure`, `presentation`).
+
+### Frontend (`/frontend`)
+A modern, reactive UI built for speed and accessibility.
+- **Framework**: Next.js (App Router)
+- **State/UI**: React 19, Tailwind CSS, Shadcn/UI.
+- **Client Features**:
+  - `html2canvas` + `jspdf` for client-side report generation.
+  - Framer Motion for micro-interactions.
+  - Responsive glassmorphism design.
+
+## 🚀 Quick Start
+
+### Prerequisites
+1.  **Node.js 18+** & **Python 3.10+**
+2.  **Ollama** installed and running (`ollama serve`).
+3.  Pull the model: `ollama run llama3` (or configured model).
+
+### 1. Backend Service
+```bash
+cd backend
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Windows: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure Environment
+cp .env.example .env
+# Edit .env to set OLLAMA_BASE_URL (default: http://localhost:11434)
+
+# Run Server
+uvicorn src.presentation.api.main:app --reload --port 8000
+```
+
+### 2. Frontend Application
+```bash
+cd frontend
+
+# Install dependencies
+npm install
+
+# Run Development Server
+npm run dev
+```
+
+The app will be available at **http://localhost:3000**.
+
+## 🔌 API Endpoints
+
+- `POST /api/upload`: Upload PDF/DOCX files. Returns parsed text and metadata.
+- `POST /api/analyze`: Trigger LLM analysis on specific contract ID.
+- `GET /health`: Service health check.
+
+## 🛠 Project Structure
+
+```bash
+.
+├── backend
+│   ├── src
+│   │   ├── application    # Use cases (ParseDocument, AnalyzeContract)
+│   │   ├── domain         # Entities (Clause, Contract), Interfaces
+│   │   ├── infrastructure # Parsers (PyMuPDF), LLM Gateway (Ollama)
+│   │   └── presentation   # API Routes & Main entry point
+│   └── requirements.txt
+└── frontend
+    └── src/app            # Next.js Pages (Home, Analysis, Terms, Privacy)
+    └── src/components     # Reusable UI (Analysis View, Upload Area)
+```
+
+## 🔒 Security & Privacy
+
+- **Local Processing**: By default, this system connects to a local Ollama instance. No data leaves your machine if configured locally.
+- **No Persistence**: The MVP uses in-memory or temporary storage for the session.
+
+## 👨‍💻 Author
+
+**Anthony Max**
+*AI Product Builder | Full Stack Engineer*
+
+- [Website](http://anthonymax.com/)
+- [GitHub](https://github.com/anthonydaros)
