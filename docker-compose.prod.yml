@@ -1,12 +1,36 @@
-# Production overrides for Coolify deployment
-# Usage: docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+# ==============================================
+# Production Docker Compose for Coolify Deployment
+# This is a standalone file (not an override)
+# ==============================================
 
 services:
+  # ============================================
+  # Frontend - Next.js Application
+  # ============================================
   frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://backend:8000}
+    container_name: contract-ai-frontend
+    ports:
+      - "3000:3000"
     environment:
       - NODE_ENV=production
-      # Override API URL for production domain (set in Coolify)
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://backend:8000}
+    depends_on:
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - contract-ai-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://127.0.0.1:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
     deploy:
       resources:
         limits:
@@ -21,11 +45,40 @@ services:
         max-size: "10m"
         max-file: "3"
 
+  # ============================================
+  # Backend - FastAPI Application
+  # ============================================
   backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: contract-ai-backend
+    ports:
+      - "8000:8000"
     environment:
+      - ENVIRONMENT=production
+      - API_HOST=${API_HOST:-0.0.0.0}
+      - API_PORT=${API_PORT:-8000}
       - API_DEBUG=false
-      # Production CORS (set in Coolify or .env)
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://your-domain.com}
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-https://project-contract.anthonymax.com}
+      - OLLAMA_BASE_URL=${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      - OLLAMA_API_KEY=${OLLAMA_API_KEY:-ollama}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-llama3}
+      - OLLAMA_EMBEDDING_MODEL=${OLLAMA_EMBEDDING_MODEL:-nomic-embed-text}
+      - OLLAMA_TEMPERATURE=${OLLAMA_TEMPERATURE:-0.3}
+    volumes:
+      - backend-data:/app/data
+    restart: unless-stopped
+    networks:
+      - contract-ai-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
     deploy:
       resources:
         limits:
@@ -41,7 +94,7 @@ services:
         max-file: "3"
 
 # ============================================
-# Production Network Configuration
+# Networks
 # ============================================
 networks:
   contract-ai-network:
@@ -49,3 +102,10 @@ networks:
     ipam:
       config:
         - subnet: 172.28.0.0/16
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  backend-data:
+    driver: local
