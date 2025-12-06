@@ -256,7 +256,7 @@ export default function Home() {
                       <p className="text-sm text-slate-400">PDF, DOCX, or TXT files</p>
                     </div>
                   </div>
-                  <div className="glass-card p-6 h-[calc(100%-76px)]">
+                  <div className="glass-card p-6 flex-1">
                     <DocumentUploader
                       onUpload={(file) => {
                         setUploadedFile(file);
@@ -272,7 +272,7 @@ export default function Home() {
                 <div className="mt-14 flex justify-center">
                   <Button
                     onClick={handleAnalyze}
-                    className="h-16 px-14 text-lg glow-button focus-ring"
+                    className="h-14 px-8 sm:h-16 sm:px-14 text-lg glow-button focus-ring"
                   >
                     <Sparkles className="mr-3 h-6 w-6" aria-hidden="true" />
                     Analyze {selectedContract ? "Demo Contract" : "Uploaded Document"}
@@ -339,7 +339,7 @@ export default function Home() {
           <section className="py-28 relative" aria-labelledby="cta-heading">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-50" />
             <Container>
-              <div className="glass-card p-12 md:p-16 text-center">
+              <div className="glass-card p-6 sm:p-8 md:p-12 lg:p-16 text-center">
                 <div className="inline-flex mb-8">
                   <div className="h-20 w-20 rounded-2xl bg-blue-500/10 flex items-center justify-center">
                     <ShieldCheck className="h-10 w-10 text-blue-500" aria-hidden="true" />

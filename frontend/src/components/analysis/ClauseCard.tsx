@@ -193,7 +193,7 @@ export function ClauseCard({
           id={`clause-content-${id}`}
           className="border-t border-slate-700 p-5 space-y-5"
         >
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className="grid gap-5 md:grid-cols-2">
             {/* Original Text */}
             <div className="rounded-xl p-4 border border-slate-700 bg-slate-800/50">
               <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-slate-500">

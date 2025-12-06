@@ -60,7 +60,7 @@ const nextConfig: NextConfig = {
               "style-src 'self' 'unsafe-inline'",
               "img-src 'self' data: blob: https:",
               "font-src 'self' data:",
-              "connect-src 'self' http://localhost:8000 https://*.anthropic.com",
+              "connect-src 'self' http://localhost:8000 https://*.anthropic.com https://api.project-contract.anthonymax.com",
               "frame-ancestors 'none'",
               "base-uri 'self'",
               "form-action 'self'",

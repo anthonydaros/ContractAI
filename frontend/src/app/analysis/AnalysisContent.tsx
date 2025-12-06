@@ -301,7 +301,7 @@ export function AnalysisContent() {
                 <p className="text-slate-400 mb-8">AI is reviewing your document for risks...</p>
 
                 {/* Progress Bar */}
-                <div className="w-72 h-2 rounded-full overflow-hidden mx-auto bg-slate-700">
+                <div className="w-full max-w-72 h-2 rounded-full overflow-hidden mx-auto bg-slate-700">
                   <div
                     className="h-full rounded-full bg-blue-600"
                     style={{
@@ -344,12 +344,12 @@ export function AnalysisContent() {
           {!loading && !error && analysis && (
             <div>
               {/* Printable Content Area */}
-              <div ref={contentRef} className="p-4 md:p-0 bg-[#0f172a] md:bg-transparent">
+              <div ref={contentRef} className="p-2 sm:p-4 md:p-0 bg-[#0f172a] md:bg-transparent">
                 {/* Dashboard Grid */}
                 <div className="grid gap-8 lg:grid-cols-3">
                   {/* Left Column: Overview */}
                   <div className="lg:col-span-1">
-                    <div className="sticky top-28 space-y-6">
+                    <div className="lg:sticky lg:top-28 space-y-6">
                       <RiskOverview
                         level={analysis.overall_risk}
                         score={riskScore}

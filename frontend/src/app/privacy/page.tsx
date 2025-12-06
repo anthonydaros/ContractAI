@@ -10,7 +10,7 @@ export default function PrivacyPage() {
             <Header />
             <main className="flex-1 py-32">
                 <Container>
-                    <div className="max-w-3xl mx-auto glass-card p-8 md:p-12">
+                    <div className="max-w-3xl mx-auto glass-card p-4 sm:p-6 md:p-8 lg:p-12">
                         <h1 className="text-3xl font-bold text-white mb-8">Privacy Policy</h1>
 
                         <div className="prose prose-invert prose-lg text-slate-400">

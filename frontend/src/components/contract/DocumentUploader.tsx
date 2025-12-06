@@ -205,7 +205,7 @@ export function DocumentUploader({ onUpload }: DocumentUploaderProps) {
           <div className="mt-6 flex items-center gap-3 rounded-xl px-5 py-3 border border-slate-600 bg-slate-800/50">
             <FileText className="h-5 w-5 text-blue-400" />
             <div className="text-left">
-              <p className="font-medium text-white truncate max-w-[200px]">
+              <p className="font-medium text-white truncate max-w-[140px] sm:max-w-[200px]">
                 {file.name}
               </p>
               <p className="text-xs text-slate-400">

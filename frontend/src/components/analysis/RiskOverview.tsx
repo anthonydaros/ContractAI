@@ -98,7 +98,7 @@ export function RiskOverview({ level, score, summary }: RiskOverviewProps) {
     >
       <div className="flex flex-col items-center gap-6">
         {/* Gauge */}
-        <div className="relative flex h-44 w-44 items-center justify-center">
+        <div className="relative flex h-36 w-36 sm:h-44 sm:w-44 items-center justify-center">
           {/* SVG Gauge */}
           <svg
             className="h-full w-full -rotate-90 transform"
@@ -135,7 +135,7 @@ export function RiskOverview({ level, score, summary }: RiskOverviewProps) {
           {/* Center Content */}
           <div className="absolute flex flex-col items-center">
             <span
-              className={cn("text-5xl font-bold", config.color)}
+              className={cn("text-4xl sm:text-5xl font-bold", config.color)}
               aria-label={`Risk score: ${score} out of 100`}
             >
               {score}
