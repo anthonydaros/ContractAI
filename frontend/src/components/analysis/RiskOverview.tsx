@@ -1,14 +1,33 @@
 "use client";
 
+/**
+ * RiskOverview Component
+ *
+ * A visual risk gauge component that displays the overall risk assessment
+ * for a contract, including a circular progress indicator, risk level badge,
+ * and executive summary.
+ *
+ * @module components/analysis/RiskOverview
+ */
 import { AlertTriangle, CheckCircle2, AlertCircle, XCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+/**
+ * Props for the RiskOverview component.
+ */
 interface RiskOverviewProps {
+  /** Risk level category */
   level: "low" | "medium" | "high" | "critical";
+  /** Numeric risk score (0-100) */
   score: number;
+  /** Executive summary text describing the overall risk */
   summary: string;
 }
 
+/**
+ * Configuration object for risk level styling.
+ * Maps each risk level to its visual properties.
+ */
 const riskConfig = {
   low: {
     label: "Low Risk",
@@ -38,11 +57,36 @@ const riskConfig = {
     ringColor: "stroke-rose-500",
     icon: XCircle
   }
-};
+} as const;
 
+/**
+ * RiskOverview - Displays a visual risk assessment gauge.
+ *
+ * This component renders a circular progress gauge showing the risk score,
+ * a colored badge indicating the risk level, and an executive summary.
+ * The gauge uses SVG for smooth animations and responsive scaling.
+ *
+ * @param props - Component props
+ * @param props.level - Risk level category (low/medium/high/critical)
+ * @param props.score - Numeric risk score from 0 to 100
+ * @param props.summary - Executive summary describing the overall assessment
+ *
+ * @returns The rendered risk overview component
+ *
+ * @example
+ * ```tsx
+ * <RiskOverview
+ *   level="high"
+ *   score={75}
+ *   summary="This contract contains several problematic clauses."
+ * />
+ * ```
+ */
 export function RiskOverview({ level, score, summary }: RiskOverviewProps) {
   const config = riskConfig[level];
   const Icon = config.icon;
+
+  // Calculate SVG circle properties for the gauge
   const circumference = 2 * Math.PI * 45;
   const strokeDashoffset = circumference - (score / 100) * circumference;
 
@@ -56,7 +100,11 @@ export function RiskOverview({ level, score, summary }: RiskOverviewProps) {
         {/* Gauge */}
         <div className="relative flex h-44 w-44 items-center justify-center">
           {/* SVG Gauge */}
-          <svg className="h-full w-full -rotate-90 transform" viewBox="0 0 100 100" aria-hidden="true">
+          <svg
+            className="h-full w-full -rotate-90 transform"
+            viewBox="0 0 100 100"
+            aria-hidden="true"
+          >
             {/* Background Circle */}
             <circle
               cx="50"

@@ -1,20 +1,53 @@
 "use client";
 
+/**
+ * ClauseCard Component
+ *
+ * An expandable card component for displaying individual contract clause
+ * analysis results, including risk assessment, legal references, and
+ * AI-suggested rewrites.
+ *
+ * @module components/analysis/ClauseCard
+ */
 import { useState } from "react";
-import { ChevronDown, AlertTriangle, BookOpen, Wand2, Copy, Check, AlertCircle, CheckCircle2, XCircle } from "lucide-react";
+import {
+  ChevronDown,
+  AlertTriangle,
+  BookOpen,
+  Wand2,
+  Copy,
+  Check,
+  AlertCircle,
+  CheckCircle2,
+  XCircle
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+/**
+ * Props for the ClauseCard component.
+ */
 interface ClauseCardProps {
+  /** Unique identifier for the clause */
   id: string;
+  /** Display title for the clause */
   title: string;
+  /** Risk level assessment */
   risk: "low" | "medium" | "high" | "critical";
+  /** Original clause text from the contract */
   text: string;
+  /** AI-suggested replacement text */
   suggestion?: string;
+  /** Detailed explanation of the risk assessment */
   explanation: string;
+  /** Reference to relevant law or regulation */
   lawReference?: string;
 }
 
+/**
+ * Configuration object for risk level styling.
+ * Maps each risk level to its visual properties and icon.
+ */
 const riskConfig = {
   low: {
     color: "text-emerald-400",
@@ -44,15 +77,63 @@ const riskConfig = {
     icon: XCircle,
     label: "Critical"
   }
-};
+} as const;
 
-export function ClauseCard({ id, title, risk, text, suggestion, explanation, lawReference }: ClauseCardProps) {
+/**
+ * ClauseCard - Expandable card displaying clause analysis details.
+ *
+ * Features:
+ * - Collapsible interface showing risk level and title by default
+ * - Expanded view with original text, risk explanation, and suggested rewrite
+ * - Copy-to-clipboard functionality for suggested rewrites
+ * - Color-coded risk indicators
+ * - Legal reference display when available
+ *
+ * @param props - Component props
+ * @param props.id - Clause identifier (e.g., "CLAUSE 3")
+ * @param props.title - Clause topic title
+ * @param props.risk - Risk level (low/medium/high/critical)
+ * @param props.text - Original clause text
+ * @param props.suggestion - Optional AI-suggested rewrite
+ * @param props.explanation - Risk explanation text
+ * @param props.lawReference - Optional legal reference
+ *
+ * @returns The rendered clause card component
+ *
+ * @example
+ * ```tsx
+ * <ClauseCard
+ *   id="CLAUSE 3"
+ *   title="Rent Adjustment"
+ *   risk="high"
+ *   text="Monthly rent may be adjusted at landlord's discretion."
+ *   explanation="This clause violates tenant protection laws."
+ *   lawReference="Tenant Protection Act - Section 18"
+ *   suggestion="Monthly rent shall be adjusted annually based on CPI."
+ * />
+ * ```
+ */
+export function ClauseCard({
+  id,
+  title,
+  risk,
+  text,
+  suggestion,
+  explanation,
+  lawReference
+}: ClauseCardProps) {
+  /** Controls the expanded/collapsed state of the card */
   const [isExpanded, setIsExpanded] = useState(false);
+  /** Indicates if the suggestion has been copied to clipboard */
   const [copied, setCopied] = useState(false);
 
   const config = riskConfig[risk];
   const RiskIcon = config.icon;
 
+  /**
+   * Copies the suggested rewrite to the clipboard.
+   * Shows a confirmation state for 2 seconds after copying.
+   */
   const handleCopy = async () => {
     if (suggestion) {
       await navigator.clipboard.writeText(suggestion);
@@ -68,7 +149,7 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
         isExpanded ? "border-blue-500/30" : "border-slate-700"
       )}
     >
-      {/* Header */}
+      {/* Header - Clickable to expand/collapse */}
       <button
         type="button"
         className="flex w-full cursor-pointer items-center justify-between p-5 transition-colors duration-200 hover:bg-slate-800/50 focus-ring text-left"
@@ -86,7 +167,7 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
               config.color
             )}
           >
-            <RiskIcon className="h-3 w-3" />
+            <RiskIcon className="h-3 w-3" aria-hidden="true" />
             {config.label}
           </div>
 
@@ -102,6 +183,7 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
             "h-5 w-5 text-slate-500 transition-transform duration-200",
             isExpanded && "rotate-180"
           )}
+          aria-hidden="true"
         />
       </button>
 
@@ -130,7 +212,7 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
                   config.bgColor,
                   config.borderColor
                 )}>
-                  <RiskIcon className={cn("h-5 w-5", config.color)} />
+                  <RiskIcon className={cn("h-5 w-5", config.color)} aria-hidden="true" />
                 </div>
                 <div>
                   <h4 className={cn("font-semibold mb-2", config.color)}>
@@ -147,7 +229,7 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
           {/* Law Reference */}
           {lawReference && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-blue-500/20 bg-blue-500/5">
-              <BookOpen className="h-5 w-5 text-blue-400" />
+              <BookOpen className="h-5 w-5 text-blue-400" aria-hidden="true" />
               <span className="text-sm text-slate-400">
                 <span className="font-semibold text-slate-300">Legal Reference:</span>{" "}
                 {lawReference}
@@ -161,7 +243,7 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-xl flex items-center justify-center bg-emerald-600">
-                    <Wand2 className="h-5 w-5 text-white" />
+                    <Wand2 className="h-5 w-5 text-white" aria-hidden="true" />
                   </div>
                   <h4 className="font-semibold text-emerald-400">
                     Suggested Rewrite
@@ -178,12 +260,12 @@ export function ClauseCard({ id, title, risk, text, suggestion, explanation, law
                 >
                   {copied ? (
                     <>
-                      <Check className="mr-2 h-3 w-3" />
+                      <Check className="mr-2 h-3 w-3" aria-hidden="true" />
                       Copied!
                     </>
                   ) : (
                     <>
-                      <Copy className="mr-2 h-3 w-3" />
+                      <Copy className="mr-2 h-3 w-3" aria-hidden="true" />
                       Copy
                     </>
                   )}

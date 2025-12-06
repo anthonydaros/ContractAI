@@ -1,6 +1,14 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+/**
+ * AnalysisContent Component
+ *
+ * Displays the complete analysis results for a contract, including
+ * risk overview, clause-by-clause analysis, and export functionality.
+ *
+ * @module app/analysis/AnalysisContent
+ */
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import { Container } from "@/components/layout/Container";
 import { RiskOverview } from "@/components/analysis/RiskOverview";
@@ -18,115 +26,189 @@ import {
   ShieldCheck,
   AlertTriangle,
   CheckCircle2,
-  Sparkles,
   Check
 } from "lucide-react";
 import Link from "next/link";
-import api, { AnalysisResult } from "@/lib/api";
+import api, { AnalysisResult, Clause } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import { sanitizeText } from "@/lib/sanitize";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
-// Mock data for fallback
-const MOCK_ANALYSIS: AnalysisResult = {
-  contract_id: "demo",
-  contract_name: "Demo Contract Analysis",
-  overall_risk: "high",
-  summary: "This contract contains 3 problematic clauses related to liability limitations and termination. The indemnification clause allows for unlimited liability, which deviates significantly from market standards.",
-  clauses: [
-    {
-      clause_id: "CLAUSE 3",
-      original_text: "Rent of $2,000.00 with monthly adjustment by whichever index the LANDLORD deems most appropriate.",
-      topic: "rent_adjustment",
-      risk_level: "critical",
-      risk_explanation: "Monthly rent adjustment is illegal under tenant protection laws. Additionally, allowing the landlord to choose the index arbitrarily violates the principle of good faith.",
-      law_reference: "Tenant Protection Act - Section 18",
-      suggested_rewrite: "The monthly rent shall be $2,000.00, subject to annual adjustment based on the Consumer Price Index (CPI), applied on the contract anniversary date."
-    },
-    {
-      clause_id: "CLAUSE 4",
-      original_text: "The LANDLORD may inspect the property AT ANY TIME, without prior notice to the tenant.",
-      topic: "property_inspection",
-      risk_level: "high",
-      risk_explanation: "Unannounced inspections violate tenant privacy rights. The landlord cannot access the property without reasonable notice except in emergencies.",
-      law_reference: "Civil Code - Article 1335",
-      suggested_rewrite: "The LANDLORD may inspect the property with minimum 48 hours written notice, during business hours (9 AM - 6 PM)."
-    },
-    {
-      clause_id: "CLAUSE 6",
-      original_text: "The TENANT must pay 6 months' rent as advance security deposit, which shall not be refunded under any circumstances.",
-      topic: "security_deposit",
-      risk_level: "high",
-      risk_explanation: "Security deposit exceeds legal limits (max 3 months) and non-refundable clause is illegal.",
-      law_reference: "Tenant Protection Act - Section 38",
-      suggested_rewrite: "Security deposit shall be 2 months' rent, to be returned within 30 days after lease termination."
-    },
-    {
-      clause_id: "CLAUSE 1",
-      original_text: "The owner rents the property to the tenant under the conditions below.",
-      topic: "subject_matter",
-      risk_level: "low",
-      risk_explanation: "Standard introductory clause.",
-      law_reference: null,
-      suggested_rewrite: ""
-    }
-  ],
-  total_issues: 3,
-  recommendation: "DO_NOT_SIGN",
-  analyzed_at: new Date().toISOString()
+/**
+ * Risk score mapping for visual representation.
+ * Maps risk levels to numeric scores for the gauge display.
+ */
+const RISK_SCORES: Record<string, number> = {
+  low: 25,
+  medium: 50,
+  high: 75,
+  critical: 95
 };
 
+/**
+ * Sanitizes clause data to prevent XSS attacks.
+ * Applies text sanitization to all user-facing string fields.
+ *
+ * @param clause - Raw clause data from API
+ * @returns Sanitized clause data safe for rendering
+ */
+function sanitizeClause(clause: Clause): Clause {
+  return {
+    ...clause,
+    clause_id: sanitizeText(clause.clause_id),
+    original_text: sanitizeText(clause.original_text),
+    topic: sanitizeText(clause.topic),
+    risk_explanation: sanitizeText(clause.risk_explanation),
+    law_reference: clause.law_reference ? sanitizeText(clause.law_reference) : null,
+    suggested_rewrite: sanitizeText(clause.suggested_rewrite),
+  };
+}
+
+/**
+ * Sanitizes complete analysis result to prevent XSS attacks.
+ *
+ * @param analysis - Raw analysis data from API
+ * @returns Sanitized analysis data safe for rendering
+ */
+function sanitizeAnalysis(analysis: AnalysisResult): AnalysisResult {
+  return {
+    ...analysis,
+    contract_id: sanitizeText(analysis.contract_id),
+    contract_name: sanitizeText(analysis.contract_name),
+    summary: sanitizeText(analysis.summary),
+    recommendation: sanitizeText(analysis.recommendation),
+    clauses: analysis.clauses.map(sanitizeClause),
+  };
+}
+
+/**
+ * Formats a topic string for display.
+ * Converts snake_case to Title Case.
+ *
+ * @param topic - Topic string in snake_case
+ * @returns Formatted topic string
+ *
+ * @example
+ * formatTopic("rent_adjustment") // "Rent Adjustment"
+ */
+function formatTopic(topic: string): string {
+  return topic
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, l => l.toUpperCase());
+}
+
+/**
+ * AnalysisContent - Main component for displaying contract analysis results.
+ *
+ * Features:
+ * - Fetches and displays AI-powered contract analysis
+ * - Risk overview with visual gauge
+ * - Clause-by-clause breakdown with risk levels
+ * - PDF export functionality
+ * - Share results via URL copy
+ *
+ * @returns The rendered analysis content
+ *
+ * @example
+ * ```tsx
+ * // Usage in page component
+ * <Suspense fallback={<Loading />}>
+ *   <AnalysisContent />
+ * </Suspense>
+ * ```
+ */
 export function AnalysisContent() {
   const searchParams = useSearchParams();
   const contractId = searchParams.get("contract");
+  const uploadId = searchParams.get("upload");
   const contentRef = useRef<HTMLDivElement>(null);
 
+  /** Loading state while fetching analysis */
   const [loading, setLoading] = useState(true);
+  /** Error message if analysis fails */
   const [error, setError] = useState<string | null>(null);
+  /** Analysis result data */
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
 
-  // Action states
+  /** PDF export in progress flag */
   const [isExporting, setIsExporting] = useState(false);
+  /** Share link copied confirmation flag */
   const [isCopied, setIsCopied] = useState(false);
 
+  /**
+   * Fetches contract analysis from API.
+   * Handles both mock contracts and uploaded documents.
+   */
   useEffect(() => {
+    let isMounted = true;
+    const abortController = new AbortController();
+
     async function fetchAnalysis() {
       setLoading(true);
       setError(null);
 
       try {
-        if (contractId) {
-          // Call real API
-          const result = await api.analyzeContract("mock", contractId);
-          setAnalysis(result);
+        let result: AnalysisResult;
+
+        if (uploadId) {
+          // Analyze uploaded document
+          result = await api.analyzeContract("upload", undefined, uploadId);
+        } else if (contractId) {
+          // Analyze mock contract
+          result = await api.analyzeContract("mock", contractId);
         } else {
-          // Use mock data for demo
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          setAnalysis(MOCK_ANALYSIS);
+          throw new Error("No contract or upload ID provided");
+        }
+
+        // Only update state if component is still mounted
+        if (isMounted) {
+          // SECURITY: Sanitize all text content before rendering
+          const sanitizedResult = sanitizeAnalysis(result);
+          setAnalysis(sanitizedResult);
         }
       } catch (err) {
         console.error("Analysis failed:", err);
-        // Fallback to mock data on error
-        setAnalysis(MOCK_ANALYSIS);
-        setError("Using demo data - API connection failed");
+        if (isMounted) {
+          const errorMessage = err instanceof Error ? err.message : "Analysis failed";
+          setError(errorMessage);
+          setAnalysis(null);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     }
 
     fetchAnalysis();
-  }, [contractId]);
 
-  const handleShare = () => {
+    // Cleanup function to prevent memory leaks
+    return () => {
+      isMounted = false;
+      abortController.abort();
+    };
+  }, [contractId, uploadId]);
+
+  /**
+   * Copies the current page URL to clipboard for sharing.
+   */
+  const handleShare = useCallback(() => {
     const url = window.location.href;
     navigator.clipboard.writeText(url).then(() => {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
+    }).catch((err) => {
+      console.error("Failed to copy URL:", err);
     });
-  };
+  }, []);
 
-  const handleExportPDF = async () => {
-    if (!contentRef.current) return;
+  /**
+   * Exports the analysis results as a PDF document.
+   * Uses html2canvas to capture the content and jsPDF to generate the PDF.
+   */
+  const handleExportPDF = useCallback(async () => {
+    if (!contentRef.current || !analysis) return;
     setIsExporting(true);
 
     try {
@@ -145,25 +227,27 @@ export function AnalysisContent() {
         format: "a4"
       });
 
-      const imgWidth = 210; // A4 width
+      const imgWidth = 210; // A4 width in mm
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
       pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-      pdf.save(`Contract_Analysis_${analysis?.contract_id || "Report"}.pdf`);
+
+      // SECURITY: Sanitize filename to prevent path traversal
+      const safeContractId = analysis.contract_id.replace(/[^a-zA-Z0-9_-]/g, "_");
+      pdf.save(`Contract_Analysis_${safeContractId}.pdf`);
     } catch (err) {
       console.error("Export failed:", err);
     } finally {
       setIsExporting(false);
     }
-  };
+  }, [analysis]);
 
-  const riskScore = analysis ? {
-    low: 25,
-    medium: 50,
-    high: 75,
-    critical: 95
-  }[analysis.overall_risk] || 50 : 50;
+  // Calculate risk score for gauge display
+  const riskScore = analysis
+    ? RISK_SCORES[analysis.overall_risk] || 50
+    : 50;
 
+  // Count clauses by severity
   const criticalCount = analysis?.clauses.filter(c => c.risk_level === "critical").length || 0;
   const highCount = analysis?.clauses.filter(c => c.risk_level === "high").length || 0;
 
@@ -173,8 +257,6 @@ export function AnalysisContent() {
 
       <main className="relative pb-20 pt-28">
         <Container>
-
-
           {/* Loading State */}
           {loading && (
             <div className="flex flex-col items-center justify-center py-32">
@@ -203,18 +285,34 @@ export function AnalysisContent() {
             </div>
           )}
 
-          {/* Error Banner */}
+          {/* Error State */}
           {error && !loading && (
-            <div className="mb-6 p-4 rounded-xl border border-amber-500/30 bg-amber-500/10">
-              <div className="flex items-center gap-3">
-                <AlertCircle className="h-5 w-5 text-amber-400" />
-                <p className="text-amber-400">{error}</p>
+            <div className="flex flex-col items-center justify-center py-32">
+              <div className="glass-card p-12 text-center rounded-2xl max-w-md">
+                <div className="mx-auto mb-8">
+                  <div className="h-20 w-20 rounded-2xl flex items-center justify-center mx-auto bg-rose-600">
+                    <AlertCircle className="h-10 w-10 text-white" />
+                  </div>
+                </div>
+
+                <h2 className="text-2xl font-bold text-white mb-3">Analysis Failed</h2>
+                <p className="text-slate-400 mb-6">{error}</p>
+
+                <Link href="/">
+                  <Button
+                    variant="outline"
+                    className="border-slate-700 bg-slate-800/50 text-slate-300 hover:bg-slate-800 hover:text-white"
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Try Again
+                  </Button>
+                </Link>
               </div>
             </div>
           )}
 
           {/* Analysis Results */}
-          {!loading && analysis && (
+          {!loading && !error && analysis && (
             <div>
               {/* Printable Content Area */}
               <div ref={contentRef} className="p-4 md:p-0 bg-[#0f172a] md:bg-transparent">
@@ -334,7 +432,7 @@ export function AnalysisContent() {
                         <ClauseCard
                           key={clause.clause_id}
                           id={clause.clause_id}
-                          title={clause.topic.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase())}
+                          title={formatTopic(clause.topic)}
                           risk={clause.risk_level}
                           text={clause.original_text}
                           explanation={clause.risk_explanation}

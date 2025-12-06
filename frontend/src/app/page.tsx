@@ -68,7 +68,7 @@ export default function Home() {
                 </h1>
 
                 {/* Description */}
-                <p className="mt-8 max-w-2xl text-lg text-slate-400 leading-relaxed md:text-xl">
+                <p className="mt-8 max-w-2xl text-lg text-slate-300 leading-relaxed md:text-xl">
                   Upload your contract and get an{" "}
                   <span className="text-blue-400 font-medium">instant AI-powered analysis</span>{" "}
                   that identifies risks, unfair terms, and provides smart rewrite suggestions.
@@ -78,9 +78,9 @@ export default function Home() {
                 <div className="mt-12 flex flex-col gap-4 sm:flex-row">
                   <Link href="#upload">
                     <Button className="h-14 px-10 text-base glow-button focus-ring">
-                      <Sparkles className="mr-2.5 h-5 w-5" />
+                      <Sparkles className="mr-2.5 h-5 w-5" aria-hidden="true" />
                       Start Analysis
-                      <ArrowRight className="ml-2.5 h-5 w-5" />
+                      <ArrowRight className="ml-2.5 h-5 w-5" aria-hidden="true" />
                     </Button>
                   </Link>
                   <Link href="/analysis">
@@ -88,21 +88,25 @@ export default function Home() {
                       variant="outline"
                       className="h-14 px-10 text-base bg-slate-800/50 border-slate-700 hover:bg-slate-700/80 hover:border-slate-600 text-white focus-ring backdrop-blur-sm"
                     >
-                      <FileSearch className="mr-2.5 h-5 w-5" />
+                      <FileSearch className="mr-2.5 h-5 w-5" aria-hidden="true" />
                       View Demo
                     </Button>
                   </Link>
                 </div>
 
                 {/* Trust Indicators */}
-                <div className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-slate-400">
+                <div
+                  className="mt-16 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 text-sm text-slate-300"
+                  role="list"
+                  aria-label="Key features"
+                >
                   {[
                     { icon: Lock, text: "100% Private & Secure" },
                     { icon: Brain, text: "Advanced AI Analysis" },
                     { icon: Zap, text: "Instant Results" }
                   ].map((item, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4 text-blue-500" />
+                    <div key={i} className="flex items-center gap-2" role="listitem">
+                      <item.icon className="h-4 w-4 text-blue-500" aria-hidden="true" />
                       <span>{item.text}</span>
                     </div>
                   ))}
@@ -131,14 +135,14 @@ export default function Home() {
           </section>
 
           {/* Features Section */}
-          <section className="py-28 relative">
+          <section className="py-28 relative" aria-labelledby="features-heading">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-50" />
             <Container>
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                <h2 id="features-heading" className="text-3xl md:text-4xl font-bold text-white mb-4">
                   Powerful Features
                 </h2>
-                <p className="text-slate-400 max-w-xl mx-auto">
+                <p className="text-slate-300 max-w-xl mx-auto">
                   Everything you need to understand and negotiate your contracts effectively
                 </p>
               </div>
@@ -193,12 +197,12 @@ export default function Home() {
                     className="feature-card group hover:bg-slate-800/50 transition-colors"
                   >
                     <div className={`mb-6 inline-flex rounded-xl ${feature.bgColor} p-4 ${feature.color}`}>
-                      <feature.icon className="h-7 w-7" />
+                      <feature.icon className="h-7 w-7" aria-hidden="true" />
                     </div>
                     <h3 className="mb-3 text-xl font-bold text-white">
                       {feature.title}
                     </h3>
-                    <p className="text-slate-400 leading-relaxed">{feature.description}</p>
+                    <p className="text-slate-300 leading-relaxed">{feature.description}</p>
                   </div>
                 ))}
               </div>
@@ -206,14 +210,14 @@ export default function Home() {
           </section>
 
           {/* Upload Section */}
-          <section id="upload" className="py-28 relative">
+          <section id="upload" className="py-28 relative" aria-labelledby="upload-heading">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-50" />
             <Container>
               <div className="mb-16 text-center">
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+                <h2 id="upload-heading" className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
                   Ready to Analyze?
                 </h2>
-                <p className="text-slate-400 max-w-xl mx-auto">
+                <p className="text-slate-300 max-w-xl mx-auto">
                   Choose a demo contract to explore the features, or upload your own document for analysis.
                 </p>
               </div>
@@ -223,7 +227,7 @@ export default function Home() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                      <FileSearch className="h-6 w-6 text-blue-500" />
+                      <FileSearch className="h-6 w-6 text-blue-500" aria-hidden="true" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white">Try a Demo</h3>
@@ -245,7 +249,7 @@ export default function Home() {
                 <div className="space-y-6">
                   <div className="flex items-center gap-4">
                     <div className="h-12 w-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                      <Sparkles className="h-6 w-6 text-violet-500" />
+                      <Sparkles className="h-6 w-6 text-violet-500" aria-hidden="true" />
                     </div>
                     <div>
                       <h3 className="text-xl font-semibold text-white">Upload Document</h3>
@@ -270,9 +274,9 @@ export default function Home() {
                     onClick={handleAnalyze}
                     className="h-16 px-14 text-lg glow-button focus-ring"
                   >
-                    <Sparkles className="mr-3 h-6 w-6" />
+                    <Sparkles className="mr-3 h-6 w-6" aria-hidden="true" />
                     Analyze {selectedContract ? "Demo Contract" : "Uploaded Document"}
-                    <ArrowRight className="ml-3 h-5 w-5" />
+                    <ArrowRight className="ml-3 h-5 w-5" aria-hidden="true" />
                   </Button>
                 </div>
               )}
@@ -280,14 +284,14 @@ export default function Home() {
           </section>
 
           {/* How It Works */}
-          <section className="py-28 relative">
+          <section className="py-28 relative" aria-labelledby="how-it-works-heading">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-50" />
             <Container>
               <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                <h2 id="how-it-works-heading" className="text-3xl md:text-4xl font-bold text-white mb-4">
                   How It Works
                 </h2>
-                <p className="text-slate-400 max-w-xl mx-auto">
+                <p className="text-slate-300 max-w-xl mx-auto">
                   Three simple steps to analyze and understand your contracts
                 </p>
               </div>
@@ -317,11 +321,11 @@ export default function Home() {
                       </div>
                       <div className="relative z-10">
                         <h3 className="text-xl font-bold text-white mb-3">{item.title}</h3>
-                        <p className="text-slate-400">{item.description}</p>
+                        <p className="text-slate-300">{item.description}</p>
                       </div>
                     </div>
                     {i < 2 && (
-                      <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20">
+                      <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20" aria-hidden="true">
                         <ArrowRight className="h-6 w-6 text-slate-600" />
                       </div>
                     )}
@@ -332,28 +336,28 @@ export default function Home() {
           </section>
 
           {/* CTA Section */}
-          <section className="py-28 relative">
+          <section className="py-28 relative" aria-labelledby="cta-heading">
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent opacity-50" />
             <Container>
               <div className="glass-card p-12 md:p-16 text-center">
                 <div className="inline-flex mb-8">
                   <div className="h-20 w-20 rounded-2xl bg-blue-500/10 flex items-center justify-center">
-                    <ShieldCheck className="h-10 w-10 text-blue-500" />
+                    <ShieldCheck className="h-10 w-10 text-blue-500" aria-hidden="true" />
                   </div>
                 </div>
 
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+                <h2 id="cta-heading" className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
                   Protect Yourself from Unfair Contracts
                 </h2>
-                <p className="text-slate-400 max-w-2xl mx-auto text-lg mb-10">
+                <p className="text-slate-300 max-w-2xl mx-auto text-lg mb-10">
                   Don't sign another contract without understanding exactly what you're agreeing to.
                   Start your free analysis now.
                 </p>
                 <Link href="#upload">
                   <Button className="h-14 px-12 text-base glow-button focus-ring">
-                    <Sparkles className="mr-2.5 h-5 w-5" />
+                    <Sparkles className="mr-2.5 h-5 w-5" aria-hidden="true" />
                     Get Started Free
-                    <ArrowRight className="ml-2.5 h-5 w-5" />
+                    <ArrowRight className="ml-2.5 h-5 w-5" aria-hidden="true" />
                   </Button>
                 </Link>
               </div>

@@ -1,20 +1,67 @@
-from fastapi import APIRouter
-from pydantic import BaseModel
+"""
+Mock contracts API routes.
+
+This module provides endpoints for listing and retrieving demo contracts
+used for testing and demonstration purposes.
+"""
+import logging
+from fastapi import APIRouter, HTTPException
+from pydantic import BaseModel, Field
 from typing import List
+
+# Configure module logger
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/contracts", tags=["contracts"])
 
+
 class ContractPreview(BaseModel):
-    id: str
-    name: str
-    description: str
-    risk_level: str
-    preview: str
+    """
+    Preview model for contract listings.
+
+    Attributes:
+        id: Unique identifier for the contract.
+        name: Display name of the contract.
+        description: Brief description of the contract type and terms.
+        risk_level: Pre-assessed risk level (low/medium/high).
+        preview: First 200 characters of the contract content.
+    """
+    id: str = Field(..., description="Contract unique identifier")
+    name: str = Field(..., description="Contract display name")
+    description: str = Field(..., description="Brief contract description")
+    risk_level: str = Field(..., description="Risk level: low, medium, or high")
+    preview: str = Field(..., description="Content preview (first 200 chars)")
+
 
 class ContractsResponse(BaseModel):
+    """
+    Response model for contract listings.
+
+    Attributes:
+        contracts: List of contract previews.
+    """
     contracts: List[ContractPreview]
 
-# Mock contracts data
+
+class ContractDetail(BaseModel):
+    """
+    Full contract detail model.
+
+    Attributes:
+        id: Unique identifier for the contract.
+        name: Display name of the contract.
+        description: Brief description of the contract.
+        risk_level: Pre-assessed risk level.
+        content: Full text content of the contract.
+    """
+    id: str = Field(..., description="Contract unique identifier")
+    name: str = Field(..., description="Contract display name")
+    description: str = Field(..., description="Brief contract description")
+    risk_level: str = Field(..., description="Risk level: low, medium, or high")
+    content: str = Field(..., description="Full contract text")
+
+
+# Mock contracts data for demonstration
 MOCK_CONTRACTS = {
     "fair": {
         "id": "fair",
@@ -108,9 +155,19 @@ damages, losses, without any limitation whatsoever."""
     }
 }
 
+
 @router.get("/", response_model=ContractsResponse)
-async def list_contracts():
-    """List all available demo contracts"""
+async def list_contracts() -> ContractsResponse:
+    """
+    List all available demo contracts.
+
+    Returns a list of contract previews including ID, name, description,
+    risk level, and a content preview.
+
+    Returns:
+        ContractsResponse: List of available contracts.
+    """
+    logger.info("Listing all mock contracts")
     contracts = [
         ContractPreview(
             id=c["id"],
@@ -123,17 +180,35 @@ async def list_contracts():
     ]
     return ContractsResponse(contracts=contracts)
 
-@router.get("/{contract_id}")
-async def get_contract(contract_id: str):
-    """Get a specific contract by ID"""
+
+@router.get("/{contract_id}", response_model=ContractDetail)
+async def get_contract(contract_id: str) -> ContractDetail:
+    """
+    Get a specific contract by ID.
+
+    Args:
+        contract_id: The unique identifier of the contract.
+
+    Returns:
+        ContractDetail: Full contract details including content.
+
+    Raises:
+        HTTPException(404): If contract_id is not found.
+    """
     if contract_id not in MOCK_CONTRACTS:
-        return {"error": "Contract not found"}
+        logger.warning(f"Contract not found: {contract_id}")
+        raise HTTPException(
+            status_code=404,
+            detail=f"Contract '{contract_id}' not found"
+        )
 
     contract = MOCK_CONTRACTS[contract_id]
-    return {
-        "id": contract["id"],
-        "name": contract["name"],
-        "description": contract["description"],
-        "risk_level": contract["risk_level"],
-        "content": contract["content"]
-    }
+    logger.info(f"Retrieved contract: {contract_id}")
+
+    return ContractDetail(
+        id=contract["id"],
+        name=contract["name"],
+        description=contract["description"],
+        risk_level=contract["risk_level"],
+        content=contract["content"]
+    )
