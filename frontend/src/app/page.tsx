@@ -325,8 +325,8 @@ export default function Home() {
                       </div>
                     </div>
                     {i < 2 && (
-                      <div className="hidden md:block absolute top-1/2 -right-4 transform -translate-y-1/2 z-20" aria-hidden="true">
-                        <ArrowRight className="h-6 w-6 text-slate-600" />
+                      <div className="hidden md:flex absolute top-1/2 -right-[20px] transform -translate-y-1/2 z-20 h-10 w-10 items-center justify-center rounded-full bg-slate-800 border border-slate-700" aria-hidden="true">
+                        <ArrowRight className="h-5 w-5 text-blue-400" />
                       </div>
                     )}
                   </div>
