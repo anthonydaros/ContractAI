@@ -12,18 +12,18 @@ import DOMPurify from "isomorphic-dompurify";
  * Sanitize configuration for plain text content.
  * Strips all HTML tags, leaving only text content.
  */
-const TEXT_ONLY_CONFIG: DOMPurify.Config = {
-  ALLOWED_TAGS: [], // No HTML tags allowed
-  ALLOWED_ATTR: [], // No attributes allowed
+const TEXT_ONLY_CONFIG = {
+  ALLOWED_TAGS: [] as string[],
+  ALLOWED_ATTR: [] as string[],
 };
 
 /**
  * Sanitize configuration for basic formatted text.
  * Allows only safe inline formatting tags.
  */
-const BASIC_HTML_CONFIG: DOMPurify.Config = {
+const BASIC_HTML_CONFIG = {
   ALLOWED_TAGS: ["b", "i", "em", "strong", "br"],
-  ALLOWED_ATTR: [],
+  ALLOWED_ATTR: [] as string[],
 };
 
 /**

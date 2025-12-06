@@ -72,6 +72,9 @@ function sanitizeClause(clause: Clause): Clause {
 /**
  * Sanitizes complete analysis result to prevent XSS attacks.
  *
+ * Note: Enum fields (recommendation, overall_risk) are not sanitized
+ * as they are server-controlled values, not user input.
+ *
  * @param analysis - Raw analysis data from API
  * @returns Sanitized analysis data safe for rendering
  */
@@ -81,7 +84,7 @@ function sanitizeAnalysis(analysis: AnalysisResult): AnalysisResult {
     contract_id: sanitizeText(analysis.contract_id),
     contract_name: sanitizeText(analysis.contract_name),
     summary: sanitizeText(analysis.summary),
-    recommendation: sanitizeText(analysis.recommendation),
+    // recommendation and overall_risk preserved as typed enums
     clauses: analysis.clauses.map(sanitizeClause),
   };
 }
