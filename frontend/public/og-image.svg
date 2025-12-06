@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0F172A"/>
+      <stop offset="100%" style="stop-color:#1E293B"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#3B82F6"/>
+      <stop offset="100%" style="stop-color:#60A5FA"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Grid pattern -->
+  <g opacity="0.05">
+    <path d="M0 0v630M50 0v630M100 0v630M150 0v630M200 0v630M250 0v630M300 0v630M350 0v630M400 0v630M450 0v630M500 0v630M550 0v630M600 0v630M650 0v630M700 0v630M750 0v630M800 0v630M850 0v630M900 0v630M950 0v630M1000 0v630M1050 0v630M1100 0v630M1150 0v630M1200 0v630" stroke="#FFF" stroke-width="1"/>
+    <path d="M0 0h1200M0 50h1200M0 100h1200M0 150h1200M0 200h1200M0 250h1200M0 300h1200M0 350h1200M0 400h1200M0 450h1200M0 500h1200M0 550h1200M0 600h1200" stroke="#FFF" stroke-width="1"/>
+  </g>
+
+  <!-- Decorative circles -->
+  <circle cx="100" cy="100" r="200" fill="#3B82F6" opacity="0.1"/>
+  <circle cx="1100" cy="530" r="250" fill="#60A5FA" opacity="0.08"/>
+
+  <!-- Document icon (left side) -->
+  <g transform="translate(150, 165)">
+    <rect x="0" y="0" width="180" height="240" rx="8" fill="#1E293B" stroke="#3B82F6" stroke-width="3"/>
+    <path d="M130 0v50h50" fill="none" stroke="#3B82F6" stroke-width="3"/>
+    <rect x="130" y="0" width="50" height="50" fill="#0F172A"/>
+    <path d="M130 0l50 50" stroke="#3B82F6" stroke-width="3"/>
+
+    <!-- Document lines -->
+    <rect x="25" y="70" width="130" height="8" rx="4" fill="#3B82F6" opacity="0.6"/>
+    <rect x="25" y="95" width="110" height="8" rx="4" fill="#60A5FA" opacity="0.4"/>
+    <rect x="25" y="120" width="90" height="8" rx="4" fill="#60A5FA" opacity="0.3"/>
+
+    <!-- Risk indicators -->
+    <circle cx="30" cy="165" r="8" fill="#22C55E"/>
+    <rect x="50" y="157" width="80" height="16" rx="4" fill="#22C55E" opacity="0.3"/>
+
+    <circle cx="30" cy="195" r="8" fill="#EAB308"/>
+    <rect x="50" y="187" width="60" height="16" rx="4" fill="#EAB308" opacity="0.3"/>
+
+    <circle cx="30" cy="225" r="8" fill="#EF4444"/>
+    <rect x="50" y="217" width="100" height="16" rx="4" fill="#EF4444" opacity="0.3"/>
+  </g>
+
+  <!-- AI Brain/Circuit icon -->
+  <g transform="translate(380, 200)">
+    <circle cx="60" cy="60" r="50" fill="none" stroke="url(#accent)" stroke-width="3" opacity="0.5"/>
+    <circle cx="60" cy="60" r="30" fill="none" stroke="url(#accent)" stroke-width="2"/>
+    <circle cx="60" cy="60" r="10" fill="#3B82F6"/>
+
+    <!-- Connection lines -->
+    <line x1="60" y1="10" x2="60" y2="30" stroke="#60A5FA" stroke-width="2"/>
+    <line x1="60" y1="90" x2="60" y2="110" stroke="#60A5FA" stroke-width="2"/>
+    <line x1="10" y1="60" x2="30" y2="60" stroke="#60A5FA" stroke-width="2"/>
+    <line x1="90" y1="60" x2="110" y2="60" stroke="#60A5FA" stroke-width="2"/>
+
+    <!-- Corner dots -->
+    <circle cx="25" cy="25" r="5" fill="#60A5FA"/>
+    <circle cx="95" cy="25" r="5" fill="#60A5FA"/>
+    <circle cx="25" cy="95" r="5" fill="#60A5FA"/>
+    <circle cx="95" cy="95" r="5" fill="#60A5FA"/>
+  </g>
+
+  <!-- Main title -->
+  <text x="520" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#FFFFFF">AI Contract</text>
+  <text x="520" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="url(#accent)">Negotiator</text>
+
+  <!-- Subtitle -->
+  <text x="520" y="430" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#94A3B8">Analyze contracts with AI confidence</text>
+
+  <!-- Features -->
+  <g transform="translate(520, 480)">
+    <circle cx="10" cy="10" r="6" fill="#22C55E"/>
+    <text x="30" y="16" font-family="system-ui, sans-serif" font-size="20" fill="#CBD5E1">Risk Assessment</text>
+
+    <circle cx="220" cy="10" r="6" fill="#3B82F6"/>
+    <text x="240" y="16" font-family="system-ui, sans-serif" font-size="20" fill="#CBD5E1">Clause Analysis</text>
+
+    <circle cx="430" cy="10" r="6" fill="#A855F7"/>
+    <text x="450" y="16" font-family="system-ui, sans-serif" font-size="20" fill="#CBD5E1">Smart Suggestions</text>
+  </g>
+
+  <!-- Bottom accent line -->
+  <rect x="0" y="620" width="1200" height="10" fill="url(#accent)"/>
+</svg>

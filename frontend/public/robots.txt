@@ -1,0 +1,5 @@
+# Disallow all crawlers from indexing this site
+User-agent: *
+Disallow: /
+
+# No sitemap - site should not be indexed

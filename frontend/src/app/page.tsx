@@ -83,7 +83,7 @@ export default function Home() {
                       <ArrowRight className="ml-2.5 h-5 w-5" aria-hidden="true" />
                     </Button>
                   </Link>
-                  <Link href="/analysis">
+                  <Link href="/analysis?contract=fair">
                     <Button
                       variant="outline"
                       className="h-14 px-10 text-base bg-slate-800/50 border-slate-700 hover:bg-slate-700/80 hover:border-slate-600 text-white focus-ring backdrop-blur-sm"
