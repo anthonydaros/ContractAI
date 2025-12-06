@@ -222,19 +222,19 @@ export default function Home() {
                 </p>
               </div>
 
-              <div className="grid gap-8 lg:grid-cols-2">
+              <div className="grid gap-6 sm:gap-8 lg:grid-cols-2">
                 {/* Demo Contracts */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                      <FileSearch className="h-6 w-6 text-blue-500" aria-hidden="true" />
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                      <FileSearch className="h-5 w-5 sm:h-6 sm:w-6 text-blue-500" aria-hidden="true" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-white">Try a Demo</h3>
-                      <p className="text-sm text-slate-400">Pre-loaded sample contracts</p>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">Try a Demo</h3>
+                      <p className="text-xs sm:text-sm text-slate-400">Pre-loaded sample contracts</p>
                     </div>
                   </div>
-                  <div className="glass-card p-6">
+                  <div className="glass-card p-4 sm:p-6">
                     <ContractSelector
                       onSelect={(id) => {
                         setSelectedContract(id);
@@ -246,17 +246,17 @@ export default function Home() {
                 </div>
 
                 {/* Upload Section */}
-                <div className="space-y-6">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-violet-500/10 flex items-center justify-center">
-                      <Sparkles className="h-6 w-6 text-violet-500" aria-hidden="true" />
+                <div className="space-y-4 sm:space-y-6">
+                  <div className="flex items-center gap-3 sm:gap-4">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl bg-violet-500/10 flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 text-violet-500" aria-hidden="true" />
                     </div>
                     <div>
-                      <h3 className="text-xl font-semibold text-white">Upload Document</h3>
-                      <p className="text-sm text-slate-400">PDF, DOCX, or TXT files</p>
+                      <h3 className="text-lg sm:text-xl font-semibold text-white">Upload Document</h3>
+                      <p className="text-xs sm:text-sm text-slate-400">PDF, DOCX, or TXT files</p>
                     </div>
                   </div>
-                  <div className="glass-card p-6 flex-1">
+                  <div className="glass-card p-4 sm:p-6 flex-1">
                     <DocumentUploader
                       onUpload={(file) => {
                         setUploadedFile(file);

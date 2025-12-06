@@ -180,7 +180,7 @@ export function ContractSelector({ onSelect, selected }: ContractSelectorProps) 
             onClick={() => onSelect(contract.id)}
             onKeyDown={(e) => handleKeyDown(e, index)}
             className={cn(
-              "relative w-full text-left cursor-pointer rounded-xl p-4 transition-colors duration-200 border focus-ring",
+              "relative w-full text-left cursor-pointer rounded-xl p-3 sm:p-4 transition-colors duration-200 border focus-ring",
               isSelected
                 ? "bg-blue-500/10 border-blue-500/30"
                 : "bg-slate-800/50 border-slate-700 hover:border-slate-600"
@@ -193,27 +193,27 @@ export function ContractSelector({ onSelect, selected }: ContractSelectorProps) 
               </div>
             )}
 
-            <div className="flex items-start gap-4">
+            <div className="flex items-start gap-3 sm:gap-4">
               {/* Icon */}
               <div
                 className={cn(
-                  "flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border",
+                  "flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl border",
                   risk.bgColor,
                   risk.borderColor
                 )}
               >
-                <FileText className={cn("h-6 w-6", risk.color)} aria-hidden="true" />
+                <FileText className={cn("h-5 w-5 sm:h-6 sm:w-6", risk.color)} aria-hidden="true" />
               </div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2 mb-1.5">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-2 mb-1.5">
                   <h4 className="font-semibold text-white truncate">
                     {contract.name}
                   </h4>
                   <div
                     className={cn(
-                      "flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border",
+                      "self-start sm:self-auto flex-shrink-0 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border",
                       risk.bgColor,
                       risk.borderColor,
                       risk.color

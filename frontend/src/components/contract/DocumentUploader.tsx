@@ -173,7 +173,7 @@ export function DocumentUploader({ onUpload }: DocumentUploaderProps) {
   return (
     <div
       className={cn(
-        "relative flex min-h-[280px] flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors duration-200",
+        "relative flex min-h-[240px] sm:min-h-[280px] flex-col items-center justify-center rounded-xl border-2 border-dashed transition-colors duration-200",
         isDragging
           ? "border-blue-500 bg-blue-500/5"
           : "border-slate-600 hover:border-slate-500 bg-slate-800/30"
