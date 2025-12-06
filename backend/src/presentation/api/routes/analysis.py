@@ -61,7 +61,7 @@ class ClauseAnalysisResponse(BaseModel):
     risk_level: str
     risk_explanation: str
     law_reference: Optional[str] = None
-    suggested_rewrite: str
+    suggested_rewrite: Optional[str] = None
 
 
 class AnalysisResponse(BaseModel):
@@ -163,7 +163,7 @@ async def analyze_contract(request: AnalyzeRequest) -> AnalysisResponse:
                 risk_level=clause.get("risk_level", "medium"),
                 risk_explanation=clause.get("risk_explanation", ""),
                 law_reference=clause.get("law_reference"),
-                suggested_rewrite=clause.get("suggested_rewrite", "")
+                suggested_rewrite=clause.get("suggested_rewrite")
             ))
 
         logger.info(f"Analysis completed for {contract_id}: {len(clauses)} clauses analyzed")
