@@ -17,21 +17,37 @@ import {
   Brain,
   Lock,
   BarChart3,
-  MousePointerClick
+  MousePointerClick,
+  Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { api } from "@/lib/api";
 
 export default function Home() {
   const router = useRouter();
   const [selectedContract, setSelectedContract] = useState<string | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (selectedContract) {
       router.push(`/analysis?contract=${selectedContract}`);
     } else if (uploadedFile) {
-      router.push(`/analysis?uploaded=true`);
+      try {
+        setIsUploading(true);
+        const response = await api.uploadDocument(uploadedFile);
+        if (response.success && response.upload_id) {
+          router.push(`/analysis?upload=${response.upload_id}`);
+        } else {
+          console.error("Upload failed: No upload ID received");
+          // Optionally handle error UI here
+          setIsUploading(false);
+        }
+      } catch (error) {
+        console.error("Upload failed:", error);
+        setIsUploading(false);
+      }
     }
   };
 
@@ -272,11 +288,21 @@ export default function Home() {
                 <div className="mt-14 flex justify-center">
                   <Button
                     onClick={handleAnalyze}
+                    disabled={isUploading}
                     className="h-14 px-8 sm:h-16 sm:px-14 text-lg glow-button focus-ring"
                   >
-                    <Sparkles className="mr-3 h-6 w-6" aria-hidden="true" />
-                    Analyze {selectedContract ? "Demo Contract" : "Uploaded Document"}
-                    <ArrowRight className="ml-3 h-5 w-5" aria-hidden="true" />
+                    {isUploading ? (
+                      <>
+                        <Loader2 className="mr-3 h-6 w-6 animate-spin" aria-hidden="true" />
+                        Uploading...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="mr-3 h-6 w-6" aria-hidden="true" />
+                        Analyze {selectedContract ? "Demo Contract" : "Uploaded Document"}
+                        <ArrowRight className="ml-3 h-5 w-5" aria-hidden="true" />
+                      </>
+                    )}
                   </Button>
                 </div>
               )}
