@@ -37,21 +37,22 @@ interface DocumentUploaderProps {
 /**
  * Validates a file against allowed types and size constraints.
  *
+ * Validation order (from most fundamental to least):
+ * 1. Empty file check - most basic validation
+ * 2. File extension check - prevents processing unsupported formats
+ * 3. MIME type check - additional security layer
+ * 4. File size check - prevents DoS from large files
+ *
  * @param file - The file to validate
  * @returns Error message if invalid, null if valid
  */
 function validateFile(file: File): string | null {
-  // Check file size
-  if (file.size > MAX_FILE_SIZE) {
-    return `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`;
-  }
-
-  // Check file size minimum
+  // Check for empty file first (most fundamental check)
   if (file.size === 0) {
     return "File is empty";
   }
 
-  // Check file extension
+  // Check file extension before processing
   const extension = "." + file.name.split(".").pop()?.toLowerCase();
   if (!ALLOWED_EXTENSIONS.includes(extension)) {
     return `Invalid file type. Allowed: ${ALLOWED_EXTENSIONS.join(", ")}`;
@@ -60,6 +61,11 @@ function validateFile(file: File): string | null {
   // Check MIME type (if browser provides it)
   if (file.type && !ALLOWED_MIME_TYPES.includes(file.type)) {
     return `Invalid file type: ${file.type}`;
+  }
+
+  // Check file size last (after confirming it's a valid file type)
+  if (file.size > MAX_FILE_SIZE) {
+    return `File too large. Maximum size is ${MAX_FILE_SIZE / 1024 / 1024}MB`;
   }
 
   return null;

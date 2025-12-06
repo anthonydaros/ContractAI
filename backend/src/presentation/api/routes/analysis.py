@@ -3,6 +3,10 @@ Contract analysis API routes.
 
 This module provides endpoints for analyzing contracts using AI/LLM,
 identifying risks, and generating recommendations.
+
+Security:
+    - Contract text size is validated to prevent DoS attacks
+    - Error messages are sanitized to prevent information leakage
 """
 import logging
 import uuid
@@ -18,6 +22,9 @@ from ....infrastructure.llm.ollama_gateway import get_llm_gateway
 
 # Configure module logger
 logger = logging.getLogger(__name__)
+
+# Security: Maximum contract size to prevent DoS and token limit issues
+MAX_CONTRACT_LENGTH = 100000  # ~100K characters (approximately 25K tokens)
 
 router = APIRouter(prefix="/analyze", tags=["analysis"])
 
@@ -130,8 +137,16 @@ async def analyze_contract(request: AnalyzeRequest) -> AnalysisResponse:
         contract_name = f"Uploaded Document ({request.upload_id[:8]})"
         logger.info(f"Analyzing uploaded document: {contract_id}")
 
-    if not contract_text:
+    if not contract_text or len(contract_text.strip()) == 0:
         raise HTTPException(status_code=400, detail="No contract text to analyze")
+
+    # Security: Validate contract size to prevent DoS and token limit issues
+    if len(contract_text) > MAX_CONTRACT_LENGTH:
+        logger.warning(f"Contract too large: {len(contract_text)} chars (max: {MAX_CONTRACT_LENGTH})")
+        raise HTTPException(
+            status_code=413,
+            detail=f"Contract too large. Maximum {MAX_CONTRACT_LENGTH:,} characters allowed."
+        )
 
     # Perform AI analysis
     try:

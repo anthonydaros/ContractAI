@@ -34,11 +34,28 @@ A modern, reactive UI built for speed and accessibility.
 ## 🚀 Quick Start
 
 ### Prerequisites
-1.  **Node.js 18+** & **Python 3.10+**
-2.  **Ollama** installed and running (`ollama serve`).
-3.  Pull the model: `ollama run llama3` (or configured model).
+1.  **Docker & Docker Compose** (Recommended)
+2.  **Ollama** installed on host machine (`ollama serve`).
+3.  Pull model: `ollama run llama3`.
 
-### 1. Backend Service
+### Option 1: Docker (Recommended)
+The project is configured with a unified environment.
+
+1.  **Configure Environment**
+    ```bash
+    cp .env.example .env
+    # Edit .env if needed (default works for local Ollama)
+    ```
+
+2.  **Run Application**
+    ```bash
+    docker-compose up --build
+    ```
+    The app will be available at **http://localhost:3000**.
+
+### Option 2: Manual Setup
+
+#### 1. Backend Service
 ```bash
 cd backend
 
@@ -49,15 +66,11 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure Environment
-cp .env.example .env
-# Edit .env to set OLLAMA_BASE_URL (default: http://localhost:11434)
-
-# Run Server
-uvicorn src.presentation.api.main:app --reload --port 8000
+# Run Server (using root .env if supported, otherwise configure local variables)
+export $(cat ../.env | xargs) && uvicorn src.presentation.api.main:app --reload --port 8000
 ```
 
-### 2. Frontend Application
+#### 2. Frontend Application
 ```bash
 cd frontend
 

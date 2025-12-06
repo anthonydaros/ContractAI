@@ -11,7 +11,7 @@ with proper TTL and persistence.
 """
 import logging
 import threading
-from typing import Optional, Dict
+from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 
 # Configure module logger
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 _storage_lock = threading.Lock()
 
 # In-memory storage with timestamp for expiration
-_uploaded_texts: Dict[str, Dict[str, any]] = {}
+_uploaded_texts: Dict[str, Dict[str, Any]] = {}
 
 # Storage configuration
 STORAGE_TTL_HOURS = 1  # Documents expire after 1 hour

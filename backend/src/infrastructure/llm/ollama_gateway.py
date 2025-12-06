@@ -216,7 +216,7 @@ Important:
             )
             return result
 
-        except json.JSONDecodeError as e:
+        except (json.JSONDecodeError, ValueError) as e:
             logger.warning(f"JSON parsing error in contract analysis: {str(e)}")
             # Return a structured error response
             return {
@@ -369,18 +369,61 @@ Return ONLY the JSON array, no other text."""
         """
         Extract JSON from a response that may contain markdown code blocks.
 
+        Handles multiple formats:
+        - Pure JSON response
+        - JSON wrapped in ```json ... ``` code blocks
+        - JSON wrapped in ``` ... ``` code blocks
+        - JSON embedded in text (finds first { or [ and matches to closing brace)
+
         Args:
             response: Raw LLM response text.
 
         Returns:
             Cleaned JSON string.
-        """
-        json_str = response
 
-        if "```json" in response:
-            json_str = response.split("```json")[1].split("```")[0]
-        elif "```" in response:
-            json_str = response.split("```")[1].split("```")[0]
+        Raises:
+            ValueError: If no valid JSON structure is found.
+        """
+        json_str = response.strip()
+
+        # Try to extract from markdown code blocks first
+        if "```json" in json_str:
+            # Extract content between ```json and ```
+            match = re.search(r"```json\s*([\s\S]*?)\s*```", json_str)
+            if match:
+                json_str = match.group(1)
+                logger.debug("Extracted JSON from ```json code block")
+        elif "```" in json_str:
+            # Extract content between ``` and ```
+            match = re.search(r"```\s*([\s\S]*?)\s*```", json_str)
+            if match:
+                json_str = match.group(1)
+                logger.debug("Extracted JSON from ``` code block")
+
+        json_str = json_str.strip()
+
+        # If no code block found, try to find JSON object or array in text
+        if not json_str.startswith(("{", "[")):
+            # Find first { or [ and match to its closing brace/bracket
+            obj_match = re.search(r"(\{[\s\S]*\})", json_str)
+            arr_match = re.search(r"(\[[\s\S]*\])", json_str)
+
+            if obj_match and arr_match:
+                # Use whichever appears first
+                if json_str.find("{") < json_str.find("["):
+                    json_str = obj_match.group(1)
+                else:
+                    json_str = arr_match.group(1)
+                logger.debug("Extracted JSON from embedded text")
+            elif obj_match:
+                json_str = obj_match.group(1)
+                logger.debug("Extracted JSON object from text")
+            elif arr_match:
+                json_str = arr_match.group(1)
+                logger.debug("Extracted JSON array from text")
+            else:
+                logger.warning("No JSON structure found in response")
+                raise ValueError("No JSON structure found in response")
 
         return json_str.strip()
 

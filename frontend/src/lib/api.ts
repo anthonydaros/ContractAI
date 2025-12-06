@@ -11,6 +11,33 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 /**
+ * Risk level enum for type-safe risk level handling.
+ * Used throughout the application for consistent risk level references.
+ */
+export const RiskLevel = {
+  LOW: "low",
+  MEDIUM: "medium",
+  HIGH: "high",
+  CRITICAL: "critical",
+} as const;
+
+/** Risk level type derived from RiskLevel enum values */
+export type RiskLevelType = (typeof RiskLevel)[keyof typeof RiskLevel];
+
+/**
+ * Recommendation enum for type-safe recommendation handling.
+ * Represents the final recommendation for a contract.
+ */
+export const Recommendation = {
+  SIGN: "SIGN",
+  NEGOTIATE: "NEGOTIATE",
+  DO_NOT_SIGN: "DO_NOT_SIGN",
+} as const;
+
+/** Recommendation type derived from Recommendation enum values */
+export type RecommendationType = (typeof Recommendation)[keyof typeof Recommendation];
+
+/**
  * Contract preview data returned in list responses.
  */
 export interface ContractPreview {
@@ -53,7 +80,7 @@ export interface Clause {
   /** Topic category (e.g., "rent_adjustment") */
   topic: string;
   /** Risk level assessment */
-  risk_level: "low" | "medium" | "high" | "critical";
+  risk_level: RiskLevelType;
   /** Detailed explanation of the risk */
   risk_explanation: string;
   /** Reference to relevant law/regulation, or null */
@@ -74,7 +101,7 @@ export interface AnalysisResult {
   /** Analyzed contract's name */
   contract_name: string;
   /** Overall risk assessment */
-  overall_risk: "low" | "medium" | "high" | "critical";
+  overall_risk: RiskLevelType;
   /** Executive summary of the analysis */
   summary: string;
   /** List of analyzed clauses */
@@ -82,7 +109,7 @@ export interface AnalysisResult {
   /** Count of problematic clauses */
   total_issues: number;
   /** Final recommendation */
-  recommendation: "SIGN" | "NEGOTIATE" | "DO_NOT_SIGN";
+  recommendation: RecommendationType;
   /** ISO timestamp of when analysis was performed */
   analyzed_at: string;
 }
@@ -256,12 +283,15 @@ class ApiClient {
    * Analyzes a contract using AI.
    *
    * Can analyze either a mock contract (by ID) or an uploaded document (by upload_id).
+   * Supports request cancellation via AbortSignal for cleanup on component unmount.
    *
    * @param source - Source type: "mock" for demo contracts, "upload" for uploaded documents
    * @param contractId - ID of mock contract (required if source is "mock")
    * @param uploadId - ID of uploaded document (required if source is "upload")
+   * @param signal - Optional AbortSignal for request cancellation
    * @returns Complete analysis result with clause-by-clause breakdown
    * @throws Error if analysis fails or IDs are invalid
+   * @throws AbortError if request is cancelled via signal
    *
    * @example
    * ```ts
@@ -270,12 +300,18 @@ class ApiClient {
    *
    * // Analyze an uploaded document
    * const result = await api.analyzeContract("upload", undefined, "upload_abc123");
+   *
+   * // With cancellation support
+   * const controller = new AbortController();
+   * const result = await api.analyzeContract("mock", "fair", undefined, controller.signal);
+   * // To cancel: controller.abort();
    * ```
    */
   async analyzeContract(
     source: "mock" | "upload",
     contractId?: string,
-    uploadId?: string
+    uploadId?: string,
+    signal?: AbortSignal
   ): Promise<AnalysisResult> {
     return this.request("/analyze/", {
       method: "POST",
@@ -284,6 +320,7 @@ class ApiClient {
         contract_id: contractId,
         upload_id: uploadId,
       }),
+      signal,
     });
   }
 

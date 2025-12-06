@@ -36,8 +36,12 @@ import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
 /**
- * Risk score mapping for visual representation.
- * Maps risk levels to numeric scores for the gauge display.
+ * Risk score mapping for visual gauge representation.
+ * Values calibrated for optimal UX in the circular gauge display:
+ * - low (25): Quarter gauge - indicates minimal risk
+ * - medium (50): Half gauge - indicates moderate caution needed
+ * - high (75): Three-quarter gauge - indicates significant concern
+ * - critical (95): Near-full gauge - indicates severe risk requiring attention
  */
 const RISK_SCORES: Record<string, number> = {
   low: 25,
@@ -139,9 +143,9 @@ export function AnalysisContent() {
   /**
    * Fetches contract analysis from API.
    * Handles both mock contracts and uploaded documents.
+   * Uses AbortController to cancel pending requests on unmount.
    */
   useEffect(() => {
-    let isMounted = true;
     const abortController = new AbortController();
 
     async function fetchAnalysis() {
@@ -152,30 +156,41 @@ export function AnalysisContent() {
         let result: AnalysisResult;
 
         if (uploadId) {
-          // Analyze uploaded document
-          result = await api.analyzeContract("upload", undefined, uploadId);
+          // Analyze uploaded document with abort signal
+          result = await api.analyzeContract(
+            "upload",
+            undefined,
+            uploadId,
+            abortController.signal
+          );
         } else if (contractId) {
-          // Analyze mock contract
-          result = await api.analyzeContract("mock", contractId);
+          // Analyze mock contract with abort signal
+          result = await api.analyzeContract(
+            "mock",
+            contractId,
+            undefined,
+            abortController.signal
+          );
         } else {
           throw new Error("No contract or upload ID provided");
         }
 
-        // Only update state if component is still mounted
-        if (isMounted) {
-          // SECURITY: Sanitize all text content before rendering
-          const sanitizedResult = sanitizeAnalysis(result);
-          setAnalysis(sanitizedResult);
-        }
+        // SECURITY: Sanitize all text content before rendering
+        const sanitizedResult = sanitizeAnalysis(result);
+        setAnalysis(sanitizedResult);
       } catch (err) {
-        console.error("Analysis failed:", err);
-        if (isMounted) {
-          const errorMessage = err instanceof Error ? err.message : "Analysis failed";
-          setError(errorMessage);
-          setAnalysis(null);
+        // Ignore abort errors - they're expected on unmount
+        if (err instanceof Error && err.name === "AbortError") {
+          return;
         }
+
+        console.error("Analysis failed:", err);
+        const errorMessage = err instanceof Error ? err.message : "Analysis failed";
+        setError(errorMessage);
+        setAnalysis(null);
       } finally {
-        if (isMounted) {
+        // Only update loading if not aborted
+        if (!abortController.signal.aborted) {
           setLoading(false);
         }
       }
@@ -183,24 +198,35 @@ export function AnalysisContent() {
 
     fetchAnalysis();
 
-    // Cleanup function to prevent memory leaks
+    // Cleanup: abort pending request to prevent memory leaks and state updates on unmounted component
     return () => {
-      isMounted = false;
       abortController.abort();
     };
   }, [contractId, uploadId]);
 
+  /** Error state for share functionality */
+  const [shareError, setShareError] = useState(false);
+
   /**
    * Copies the current page URL to clipboard for sharing.
+   * Handles errors gracefully with user feedback.
    */
-  const handleShare = useCallback(() => {
-    const url = window.location.href;
-    navigator.clipboard.writeText(url).then(() => {
+  const handleShare = useCallback(async () => {
+    // SSR safety check
+    if (typeof window === "undefined") return;
+
+    try {
+      const url = window.location.href;
+      await navigator.clipboard.writeText(url);
       setIsCopied(true);
+      setShareError(false);
       setTimeout(() => setIsCopied(false), 2000);
-    }).catch((err) => {
+    } catch (err) {
       console.error("Failed to copy URL:", err);
-    });
+      setShareError(true);
+      setIsCopied(false);
+      setTimeout(() => setShareError(false), 3000);
+    }
   }, []);
 
   /**
@@ -462,15 +488,34 @@ export function AnalysisContent() {
                     variant="ghost"
                     className="text-slate-500 hover:text-slate-300 hover:bg-transparent transition-all"
                     onClick={handleShare}
+                    aria-label={isCopied ? "Link copied to clipboard" : shareError ? "Failed to copy link" : "Share results"}
                   >
                     {isCopied ? (
                       <>
-                        <Check className="mr-2 h-4 w-4 text-emerald-500" />
-                        <span className="text-emerald-500">Link Copied!</span>
+                        <Check className="mr-2 h-4 w-4 text-emerald-500" aria-hidden="true" />
+                        <span
+                          className="text-emerald-500"
+                          role="status"
+                          aria-live="polite"
+                          aria-atomic="true"
+                        >
+                          Link Copied!
+                        </span>
+                      </>
+                    ) : shareError ? (
+                      <>
+                        <AlertCircle className="mr-2 h-4 w-4 text-rose-500" aria-hidden="true" />
+                        <span
+                          className="text-rose-500"
+                          role="alert"
+                          aria-live="assertive"
+                        >
+                          Copy Failed
+                        </span>
                       </>
                     ) : (
                       <>
-                        <Share2 className="mr-2 h-4 w-4" />
+                        <Share2 className="mr-2 h-4 w-4" aria-hidden="true" />
                         Share Results
                       </>
                     )}

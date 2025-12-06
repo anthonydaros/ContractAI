@@ -1,22 +1,55 @@
 "use client";
 
+/**
+ * Header Component
+ *
+ * Fixed navigation header with scroll-based styling and mobile menu.
+ * SSR-safe implementation with proper event listener cleanup.
+ *
+ * @module components/layout/Header
+ */
 import Link from "next/link";
 import { Container } from "./Container";
 import { Button } from "@/components/ui/button";
 import { Scale, Github, Menu, X, Sparkles } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 
+/**
+ * Header - Main navigation component.
+ *
+ * Features:
+ * - Scroll-based background transition
+ * - Mobile-responsive menu
+ * - SSR-safe window access
+ * - Proper event listener cleanup to prevent memory leaks
+ *
+ * @returns The rendered header component
+ */
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
-  useEffect(() => {
-    const handleScroll = () => {
+  /**
+   * Handles scroll events to update header background.
+   * Memoized to prevent unnecessary re-renders.
+   */
+  const handleScroll = useCallback(() => {
+    // SSR safety check - window is only available in browser
+    if (typeof window !== "undefined") {
       setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    }
   }, []);
+
+  useEffect(() => {
+    // SSR safety check
+    if (typeof window === "undefined") return;
+
+    // Check initial scroll position
+    handleScroll();
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
 
   return (
     <header className="fixed top-0 z-50 w-full">
