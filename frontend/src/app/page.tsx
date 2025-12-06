@@ -39,7 +39,7 @@ export default function Home() {
     <div className="relative flex min-h-screen flex-col bg-[#0f172a] overflow-hidden">
       {/* Background Image with Gradient Overlay */}
       <div className="absolute inset-0 h-screen w-full z-0">
-        <div className="absolute inset-0 bg-[url('/backgrounds/negotiation-bg.png')] bg-cover bg-center bg-no-repeat opacity-[0.15]"></div>
+        <div className="absolute inset-0 bg-[url('/backgrounds/negotiation-bg.jpg')] bg-cover bg-center bg-no-repeat opacity-[0.15]"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0f172a]/20 to-[#0f172a]"></div>
       </div>
 
