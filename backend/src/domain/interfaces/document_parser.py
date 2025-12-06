@@ -41,7 +41,7 @@ class IDocumentParser(ABC):
             PermissionError: If the file cannot be read.
             ValueError: If the file format is invalid.
         """
-        pass
+        pass  # pragma: no cover
 
     @abstractmethod
     def supports(self, extension: str) -> bool:
@@ -61,4 +61,4 @@ class IDocumentParser(ABC):
             >>> parser.supports('.txt')
             False
         """
-        pass
+        pass  # pragma: no cover

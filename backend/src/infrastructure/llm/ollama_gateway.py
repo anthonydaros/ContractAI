@@ -14,13 +14,13 @@ import logging
 import threading
 from typing import List, Dict, Any, Optional
 
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 from openai import OpenAI
 
 from ...domain.interfaces.llm_gateway import ILLMGateway
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from root .env (searches parent directories)
+load_dotenv(find_dotenv(usecwd=True))
 
 # Configure module logger
 logger = logging.getLogger(__name__)

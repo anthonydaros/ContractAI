@@ -8,10 +8,10 @@ import os
 import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from dotenv import load_dotenv
+from dotenv import load_dotenv, find_dotenv
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from root .env (searches parent directories)
+load_dotenv(find_dotenv(usecwd=True))
 
 # Configure logging
 logging.basicConfig(
