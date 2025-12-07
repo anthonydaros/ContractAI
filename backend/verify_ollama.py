@@ -19,8 +19,8 @@ async def main():
     try:
         gateway = OllamaGateway()
         print(f"✅ Gateway initialized.")
-        print(f"Target URL: {gateway.base_url}")
-        print(f"Target Model: {gateway.model}")
+        print(f"Configured Providers: {gateway.provider_names}")
+        print(f"Configured Models: {gateway.models}")
     except Exception as e:
         print(f"❌ Failed to initialize gateway: {e}")
         return
